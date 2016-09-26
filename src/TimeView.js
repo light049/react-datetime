@@ -65,7 +65,8 @@ var DateTimePickerTime = React.createClass({
 	},
 	render: function() {
 		var me = this,
-			counters = []
+			counters = [],
+			footNode = null
 		;
 
 		this.state.counters.forEach( function(c){
@@ -87,12 +88,19 @@ var DateTimePickerTime = React.createClass({
 				);
 		}
 
+		if ( this.props.backLabel ) {
+			footNode = DOM.tfoot({ key: 'c', className: 'footer' }, DOM.tr({}, [
+					DOM.td({ key: 't', onClick: this.props.showView('days')}, this.props.backLabel)
+				]));
+		}
+
 		return DOM.div( {className: 'rdtTime'},
 			DOM.table( {}, [
 				this.renderHeader(),
 				DOM.tbody({key: 'b'}, DOM.tr({}, DOM.td({},
 					DOM.div({ className: 'rdtCounters' }, counters )
-				)))
+				))),
+				footNode
 			])
 		);
 	},

@@ -28,10 +28,23 @@ var Datetime = React.createClass({
 		onChange: TYPES.func,
 		locale: TYPES.string,
 		input: TYPES.bool,
-		label: TYPES.oneOfType([
+		inputLabel: TYPES.oneOfType([
 			TYPES.string,
-			TYPES.element
+			TYPES.element,
+			TYPES.bool
 		]),
+		inputLabelPullRight: TYPES.bool,
+		backLabel: TYPES.oneOfType([
+			TYPES.string,
+			TYPES.element,
+			TYPES.bool
+		]),
+		entryLabel: TYPES.oneOfType([
+			TYPES.string,
+			TYPES.element,
+			TYPES.bool
+		]),
+		weekDayDisplayMode: TYPES.oneOf(['short', 'min']),
 		// dateFormat: TYPES.string | TYPES.bool,
 		// timeFormat: TYPES.string | TYPES.bool,
 		inputProps: TYPES.object,
@@ -41,13 +54,15 @@ var Datetime = React.createClass({
 		open: TYPES.bool,
 		strictParsing: TYPES.bool,
 		closeOnSelect: TYPES.bool,
-		closeOnTab: TYPES.bool
+		closeOnTab: TYPES.bool,
+		disabled: TYPES.bool
 	},
 
 	getDefaultProps: function() {
 		var nof = function(){};
 		return {
 			className: '',
+			disabled: false,
 			defaultValue: '',
 			inputProps: {},
 			input: true,
@@ -59,7 +74,11 @@ var Datetime = React.createClass({
 			dateFormat: true,
 			strictParsing: true,
 			closeOnSelect: false,
-			closeOnTab: true
+			closeOnTab: true,
+			timeViewEntryLabel: null,
+			columnOfMonth: 3,
+			fullMonthLabel: false,
+			weekDayDisplayMode: 'min'
 		};
 	},
 
@@ -320,6 +339,17 @@ var Datetime = React.createClass({
 		this.props.onChange( date );
 	},
 
+	onFocusInput: function() {
+		this.setState({ focus: true });
+		this.openCalendar();
+	},
+	onBlurInput: function() {
+		this.setState({
+			focus: false,
+			inputValue: (this.props.input && this.state.selectDate) ? this.state.inputValue : this.props.value
+		});
+	},
+
 	openCalendar: function() {
 		if (!this.state.open) {
 			this.props.onFocus();
@@ -334,7 +364,11 @@ var Datetime = React.createClass({
 
 	handleClickOutside: function(){
 		if ( this.props.input && this.state.open && !this.props.open ){
-			this.setState({ open: false });
+			this.setState({
+				open: false,
+				currentView: this.props.dateFormat ? this.props.viewMode : 'time',
+				inputValue: this.state.selectDate ? this.state.inputValue : this.props.value
+			});
 			this.props.onBlur( this.state.selectedDate || this.state.inputValue );
 		}
 	},
@@ -347,7 +381,7 @@ var Datetime = React.createClass({
 	},
 
 	componentProps: {
-		fromProps: ['value', 'isValidDate', 'renderDay', 'renderMonth', 'renderYear', 'timeConstraints'],
+		fromProps: ['value', 'isValidDate', 'renderDay', 'renderMonth', 'renderYear', 'timeConstraints', 'backLabel', 'entryLabel', 'columnOfMonth', 'fullMonthLabel', 'weekDayDisplayMode'],
 		fromState: ['viewDate', 'selectedDate', 'updateOn'],
 		fromThis: ['setDate', 'setTime', 'showView', 'addTime', 'subtractTime', 'updateSelectedDate', 'localMoment']
 	},
@@ -367,7 +401,6 @@ var Datetime = React.createClass({
 		this.componentProps.fromThis.forEach( function( name ){
 			props[ name ] = me[ name ];
 		});
-
 		return props;
 	},
 
@@ -376,12 +409,39 @@ var Datetime = React.createClass({
 			DOM = React.DOM,
 			className = 'rdt' + (this.props.className ?
                   ( Array.isArray( this.props.className ) ?
-                  ' ' + this.props.className.join( ' ' ) : ' ' + this.props.className) : ''),
-			children = []
+                  ' ' + this.props.className.join( ' ' ) : ' ' + this.props.className) : '') + (this.props.disabled ? ' disabled' : ''),
+			children = [],
+			inputDOM,
+			inputlabelDOM,
+			geoupDOMs
 		;
 
 		if ( this.props.input ){
-			if ( this.props.label ) {
+			if ( this.props.inputLabel ) {
+				inputDOM = DOM.input( assign({
+					key: 'i',
+					type:'text',
+					className: 'form-control',
+					onFocus: this.onFocusInput,
+					onBlur: this.onBlurInput,
+					onChange: this.onInputChange,
+					onKeyDown: this.onInputKey,
+					value: this.state.inputValue
+				}, this.props.inputProps ));
+
+				inputlabelDOM = DOM.span({
+					key: 'a',
+					className: 'input-group-addon',
+					onClick: !this.props.disabled ? this.openCalendar : null,
+					children: this.props.inputLabel
+				});
+
+				if (this.props.inputLabelPullRight) {
+					geoupDOMs = [inputDOM, inputlabelDOM];
+				} else {
+					geoupDOMs = [inputlabelDOM, inputDOM];
+				}
+
 				children = [ DOM.div({
 						key: 'd',
 						className: 'form-group'
@@ -389,22 +449,7 @@ var Datetime = React.createClass({
 					[ DOM.span({
 							key: 'i',
 							className: 'input-group'
-						},
-						[ DOM.span({
-								key: 'a',
-								className: 'input-group-addon',
-								children: this.props.label
-							}),
-							DOM.input( assign({
-								key: 'i',
-								type:'text',
-								className: 'form-control',
-								onFocus: this.openCalendar,
-								onChange: this.onInputChange,
-								onKeyDown: this.onInputKey,
-								value: this.state.inputValue
-							}, this.props.inputProps ))
-						]
+						}, geoupDOMs
 					)]
 				)];
 			} else {
@@ -412,7 +457,8 @@ var Datetime = React.createClass({
 					key: 'i',
 					type:'text',
 					className: 'form-control',
-					onFocus: this.openCalendar,
+					onFocus: this.onFocusInput,
+					onBlur: this.onBlurInput,
 					onChange: this.onInputChange,
 					onKeyDown: this.onInputKey,
 					value: this.state.inputValue
@@ -424,6 +470,9 @@ var Datetime = React.createClass({
 
 		if ( this.state.open )
 			className += ' rdtOpen';
+
+		if ( this.state.focus )
+			className += ' rdtFocus';
 
 		return DOM.div({className: className}, children.concat(
 			DOM.div(

@@ -11,7 +11,10 @@ var DateTimePickerMonths = React.createClass({
 				DOM.th({ key: 'year', className: 'rdtSwitch', onClick: this.props.showView('years'), colSpan: 2, 'data-value': this.props.viewDate.year()}, this.props.viewDate.year() ),
 				DOM.th({ key: 'next', className: 'rdtNext' }, DOM.span({onClick: this.props.addTime(1, 'years')}, '›'))
 			]))),
-			DOM.table({ key: 'months'}, DOM.tbody({ key: 'b'}, this.renderMonths()))
+			DOM.table({ key: 'months'}, DOM.tbody({ key: 'b'}, this.renderMonths())),
+			DOM.table({ key: 'c', className: 'footer' }, DOM.tfoot({}, DOM.tr({}, [
+				DOM.td({ key: 't', onClick: this.props.showView('days')}, this.props.backLabel)
+			])))
 		]);
 	},
 
@@ -23,7 +26,8 @@ var DateTimePickerMonths = React.createClass({
 			i = 0,
 			months = [],
 			renderer = this.props.renderMonth || this.renderMonth,
-			classes, props
+			classes, props,
+			column = this.props.columnOfMonth
 		;
 
 		while (i < 12) {
@@ -40,7 +44,7 @@ var DateTimePickerMonths = React.createClass({
 
 			months.push( renderer( props, i, year, date && date.clone() ));
 
-			if ( months.length === 4 ){
+			if ( months.length === column ){
 				rows.push( DOM.tr({ key: month + '_' + rows.length }, months) );
 				months = [];
 			}
@@ -56,10 +60,16 @@ var DateTimePickerMonths = React.createClass({
 	},
 
 	renderMonth: function( props, month ) {
-		var monthsShort = this.props.viewDate.localeData()._monthsShort;
-		return DOM.td( props, monthsShort.standalone
-			? capitalize( monthsShort.standalone[ month ] )
-			: monthsShort[ month ]
+		var monthsCol;
+
+		if (this.props.fullMonthLabel) {
+			monthsCol = this.props.viewDate.localeData()._months;
+		} else {
+			monthsCol = this.props.viewDate.localeData()._monthsShort;
+		}
+		return DOM.td( props, monthsCol.standalone
+			? capitalize( monthsCol.standalone[ month ] )
+			: monthsCol[ month ]
 		);
 	}
 });

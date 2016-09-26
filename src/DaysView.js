@@ -40,11 +40,22 @@ var DateTimePickerDays = React.createClass({
 	 * @return {array} A list with the shortname of the days
 	 */
 	getDaysOfWeek: function( locale ){
-		var days = locale._weekdaysMin,
+		var days = [],
 			first = locale.firstDayOfWeek(),
 			dow = [],
 			i = 0
 		;
+
+		switch (this.props.weekDayDisplayMode) {
+			case 'short':
+				days = locale._weekdaysShort;
+				break;
+			case 'min':
+				days = locale._weekdaysMin;
+				break;
+			default:
+				days = locale._weekdaysMin;
+		}
 
 		days.forEach( function( day ){
 			dow[ (7 + (i++) - first) % 7 ] = day;
@@ -123,10 +134,11 @@ var DateTimePickerDays = React.createClass({
 			return '';
 
 		var date = this.props.selectedDate || this.props.viewDate;
+		var timeViewEntry = this.props.entryLabel || date.format( this.props.timeFormat );
 
 		return DOM.tfoot({ key: 'tf'},
 			DOM.tr({},
-				DOM.td({ onClick: this.props.showView('time'), colSpan: 7, className: 'rdtTimeToggle'}, date.format( this.props.timeFormat ))
+				DOM.td({ onClick: this.props.showView('time'), colSpan: 7, className: 'rdtTimeToggle'}, timeViewEntry)
 			)
 		);
 	},
