@@ -344,8 +344,11 @@ var Datetime = React.createClass({
 		this.openCalendar();
 	},
 	onBlurInput: function() {
+		var state = this.getStateFromProps( this.props );
+
 		this.setState({
 			focus: false,
+			currentView: this.props.dateFormat ? (this.props.viewMode || state.updateOn || 'days') : 'time',
 			inputValue: (this.props.input && this.state.selectDate) ? this.state.inputValue : this.props.value
 		});
 	},
@@ -363,10 +366,12 @@ var Datetime = React.createClass({
 	},
 
 	handleClickOutside: function(){
+		var state = this.getStateFromProps( this.props );
+
 		if ( this.props.input && this.state.open && !this.props.open ){
 			this.setState({
 				open: false,
-				currentView: this.props.dateFormat ? this.props.viewMode : 'time',
+				currentView: this.props.dateFormat ? (this.props.viewMode || state.updateOn || 'days') : 'time',
 				inputValue: this.state.selectDate ? this.state.inputValue : this.props.value
 			});
 			this.props.onBlur( this.state.selectedDate || this.state.inputValue );
