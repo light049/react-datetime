@@ -295,8 +295,7 @@ var Datetime = React.createClass({
 			modifier = 0,
 			viewDate = this.state.viewDate,
 			currentDate = this.state.selectedDate || viewDate,
-			date
-    ;
+			date;
 
 		if (target.className.indexOf('rdtDay') !== -1){
 			if (target.className.indexOf('rdtNew') !== -1)
@@ -349,7 +348,8 @@ var Datetime = React.createClass({
 		this.setState({
 			focus: false,
 			currentView: this.props.dateFormat ? (this.props.viewMode || state.updateOn || 'days') : 'time',
-			inputValue: (this.props.input && this.state.selectDate) ? this.state.inputValue : this.props.value
+			inputValue: (this.props.input && this.state.selectDate) ? this.state.inputValue : this.props.value,
+			selectedDate: state.selectedDate
 		});
 	},
 
