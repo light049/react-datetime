@@ -49,18 +49,18 @@ var DateTimePickerTime = React.createClass({
 				}
 			}
 			return DOM.div({ key: type, className: 'rdtCounter'}, [
-				DOM.span({ key:'up', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'increase', type ) }, '▲' ),
+				DOM.span({ key:'up', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'increase', type ) }, this.props.timeToggleLabelUp ),
 				DOM.div({ key:'c', className: 'rdtCount' }, value ),
-				DOM.span({ key:'do', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'decrease', type ) }, '▼' )
+				DOM.span({ key:'do', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'decrease', type ) }, this.props.timeToggleLabelDown )
 			]);
 		}
 		return '';
 	},
 	renderDayPart: function() {
 		return DOM.div({ className: 'rdtCounter', key: 'dayPart'}, [
-			DOM.span({ key:'up', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'toggleDayPart', 'hours') }, '▲' ),
+			DOM.span({ key:'up', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'toggleDayPart', 'hours') }, this.props.timeToggleLabelUp ),
 			DOM.div({ key: this.state.daypart, className: 'rdtCount'}, this.state.daypart ),
-			DOM.span({ key:'do', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'toggleDayPart', 'hours') }, '▼' )
+			DOM.span({ key:'do', className: 'rdtBtn', onMouseDown: this.onStartClicking( 'toggleDayPart', 'hours') }, this.props.timeToggleLabelDown )
 		]);
 	},
 	render: function() {

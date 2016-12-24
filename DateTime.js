@@ -44,6 +44,14 @@ var Datetime = React.createClass({
 			TYPES.element,
 			TYPES.bool
 		]),
+		timeToggleLabelUp: TYPES.oneOfType([
+			TYPES.string,
+			TYPES.element
+		]),
+		timeToggleLabelDown: TYPES.oneOfType([
+			TYPES.string,
+			TYPES.element
+		]),
 		weekDayDisplayMode: TYPES.oneOf(['short', 'min']),
 		// dateFormat: TYPES.string | TYPES.bool,
 		// timeFormat: TYPES.string | TYPES.bool,
@@ -78,7 +86,9 @@ var Datetime = React.createClass({
 			timeViewEntryLabel: null,
 			columnOfMonth: 3,
 			fullMonthLabel: false,
-			weekDayDisplayMode: 'min'
+			weekDayDisplayMode: 'min',
+			timeToggleLabelUp: '▲',
+			timeToggleLabelDown: '▼'
 		};
 	},
 
@@ -386,7 +396,7 @@ var Datetime = React.createClass({
 	},
 
 	componentProps: {
-		fromProps: ['value', 'isValidDate', 'renderDay', 'renderMonth', 'renderYear', 'timeConstraints', 'backLabel', 'entryLabel', 'columnOfMonth', 'fullMonthLabel', 'weekDayDisplayMode'],
+		fromProps: ['value', 'isValidDate', 'renderDay', 'renderMonth', 'renderYear', 'timeConstraints', 'backLabel', 'entryLabel', 'columnOfMonth', 'fullMonthLabel', 'weekDayDisplayMode', 'timeToggleLabelUp', 'timeToggleLabelDown'],
 		fromState: ['viewDate', 'selectedDate', 'updateOn'],
 		fromThis: ['setDate', 'setTime', 'showView', 'addTime', 'subtractTime', 'updateSelectedDate', 'localMoment']
 	},
